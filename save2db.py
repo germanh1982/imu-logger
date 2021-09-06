@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import icm20689
-from time import sleep, monotonic
+from time import sleep, monotonic, time
 from argparse import ArgumentParser
 import sqlite3
 
@@ -22,7 +22,7 @@ def main():
                 while monotonic() < next_sample:
                     pass
 
-                db.execute("INSERT INTO samples (ts, ax, ay, az, gx, gy, gz) VALUES (?, ?, ?, ?, ?, ?, ?)", (monotonic(), *imu.acceleration, *imu.gyroscope))
+                db.execute("INSERT INTO samples (ts, ax, ay, az, gx, gy, gz) VALUES (?, ?, ?, ?, ?, ?, ?)", (time(), *imu.acceleration, *imu.gyroscope))
                 samples += 1
                 next_sample += 1 / args.samplerate
 
