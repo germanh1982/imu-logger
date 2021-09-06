@@ -1,6 +1,6 @@
 from time import sleep
-from itertools import islice
 from i2cdevice import I2CDevice
+from struct import unpack
 
 # SMPRT_DIV
 SMPRT_DIV_REG = 25
@@ -122,21 +122,12 @@ class ICM20689:
 
     @property
     def acceleration(self):
-        regs = iter(self._dev.readmulti(ACCEL_OUT_REG, 6))
-        out = []
-        out.append(int.from_bytes(islice(regs, 2), 'big', signed=True) * self._accel_sf)
-        out.append(int.from_bytes(islice(regs, 2), 'big', signed=True) * self._accel_sf)
-        out.append(int.from_bytes(islice(regs, 2), 'big', signed=True) * self._accel_sf)
-        return out
+        regs = unpack('>3h', bytes(self._dev.readmulti(ACCEL_OUT_REG, 6)))
+        return [self._accel_sf * x for x in regs]
 
     @property
     def acceleration_raw(self):
-        regs = iter(self._dev.readmulti(ACCEL_OUT_REG, 6))
-        out = []
-        out.append(int.from_bytes(islice(regs, 2), 'big', signed=True))
-        out.append(int.from_bytes(islice(regs, 2), 'big', signed=True))
-        out.append(int.from_bytes(islice(regs, 2), 'big', signed=True))
-        return out
+        return unpack('>3h', bytes(self._dev.readmulti(ACCEL_OUT_REG, 6)))
 
     @property
     def accel_sensitivity(self):
@@ -163,21 +154,12 @@ class ICM20689:
 
     @property
     def gyroscope(self):
-        regs = iter(self._dev.readmulti(GYRO_OUT_REG, 6))
-        out = []
-        out.append(int.from_bytes(islice(regs, 2), 'big', signed=True) * self._gyro_sf)
-        out.append(int.from_bytes(islice(regs, 2), 'big', signed=True) * self._gyro_sf)
-        out.append(int.from_bytes(islice(regs, 2), 'big', signed=True) * self._gyro_sf)
-        return out
+        regs = unpack('>3h', bytes(self._dev.readmulti(GYRO_OUT_REG, 6)))
+        return [self._gyro_sf * x for x in regs]
 
     @property
     def gyroscope_raw(self):
-        regs = iter(self._dev.readmulti(GYRO_OUT_REG, 6))
-        out = []
-        out.append(int.from_bytes(islice(regs, 2), 'big', signed=True))
-        out.append(int.from_bytes(islice(regs, 2), 'big', signed=True))
-        out.append(int.from_bytes(islice(regs, 2), 'big', signed=True))
-        return out
+        return unpack('>3h', bytes(self._dev.readmulti(GYRO_OUT_REG, 6)))
 
     @property
     def gyro_sensitivity(self):
